@@ -1,4 +1,3 @@
-# parser.py
 from lexer import Lexer
 
 class Parser:
