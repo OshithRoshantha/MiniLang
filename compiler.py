@@ -22,7 +22,7 @@ def main():
     analyzer = SemanticAnalyzer(parser)
     generator = IntermediateCodeGenerator(analyzer)
 
-    tokens = lexer.scan_tokens()
+    tokens = lexer.tokenize()  # corrected from scan_tokens() to tokenize()
     ast = parser.parse()
     analyzed_ast, semantic_errors = analyzer.analyze()
     

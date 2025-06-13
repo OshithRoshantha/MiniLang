@@ -101,7 +101,18 @@ class Parser:
         self.eat('SEMI')
         return {'type': 'print', 'expr': expr}
 
+    # NEW: comparison parsing
     def expression(self):
+        node = self.arith_expr()
+        # Handle comparison operators
+        if self.current_token[0] in ('EQ', 'NE', 'LE', 'GE', 'LT', 'GT'):
+            op_token = self.current_token
+            self.eat(op_token[0])
+            right = self.arith_expr()
+            node = {'type': 'comparison', 'op': op_token[1], 'left': node, 'right': right}
+        return node
+
+    def arith_expr(self):
         node = self.term()
         while self.current_token[0] in ('PLUS', 'MINUS'):
             token = self.current_token
@@ -138,11 +149,6 @@ class Parser:
             node = self.expression()
             self.eat('RPAREN')
             return node
-        elif token[0] in ('EQ', 'NE', 'LE', 'GE', 'LT', 'GT'):
-            self.eat(token[0])
-            left = self.expression()
-            right = self.expression()
-            return {'type': 'comparison', 'op': token[0], 'left': left, 'right': right}
         else:
             raise SyntaxError(f"Unexpected token {token[0]} at line {token[2]}")
 
