@@ -2,16 +2,12 @@ int a;
 a = 10;
 int b;
 b = 5;
-
 int sum;
 sum = a + b;  
-
 int difference;
 difference = a - b;  
-
 int product;
 product = a * b;  
-
 int quotient;
 quotient = a / b;  
 

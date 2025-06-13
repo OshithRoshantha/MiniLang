@@ -1,0 +1,20 @@
+int n1;
+n1 = 0;
+int n2;
+n2 = 1;
+int count;
+count = 10;
+int i;
+i = 0;
+
+print(n1);
+print(n2);
+
+while (i < count - 2) {
+    int next;
+    next = n1 + n2;
+    print(next);
+    n1 = n2;
+    n2 = next;
+    i = i + 1;
+}
