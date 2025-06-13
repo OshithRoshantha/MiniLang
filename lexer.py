@@ -1,4 +1,5 @@
 import re
+import sys
 
 class Lexer:
     def __init__(self, source_code):
@@ -67,18 +68,12 @@ class Lexer:
             print(f"{kind:<10} {repr(value):<15} {line:<5}")
 
 if __name__ == "__main__":
-    source_code = """
-    int x = 5;
-    if (x > 0) {
-        print(x);
-    } else {
-        print(0);
-    }
-    while (x < 10) {
-        x = x + 1;
-    }
-    """
-    
+    if len(sys.argv) < 2:
+        print("Usage: python lexer.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
     lexer = Lexer(source_code)
     tokens = lexer.tokenize()
     lexer.print_tokens()

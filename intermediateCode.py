@@ -1,6 +1,7 @@
 from lexer import Lexer
 from parser import Parser
 from semanticAnalyzer import SemanticAnalyzer
+import sys
 
 class IntermediateCodeGenerator:
     def __init__(self, analyzer):
@@ -92,29 +93,11 @@ class IntermediateCodeGenerator:
         return node['name']
 
 if __name__ == "__main__":
-    source = """
-    int x;
-    x = 5;
-    int y;
-    y = 10;
-    if (x > y) {
-        print(x);
-    } else {
-        print(y);
-    }
-    while (x < y) {
-        x = x + 1;
-    }
-    """
-    lexer = Lexer(source)
-    parser = Parser(lexer)
-    analyzer = SemanticAnalyzer(parser)
-    generator = IntermediateCodeGenerator(analyzer)
-    code, errors = generator.generate()
-    
-    print("Intermediate Code:")
-    for line in code:
-        print(line)
-    print("\nErrors:")
-    for error in errors:
-        print(error)
+    if len(sys.argv) < 2:
+        print("Usage: python intermediateCode.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
+    generator = IntermediateCodeGenerator(source_code)
+    generator.generate()

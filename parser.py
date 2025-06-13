@@ -1,4 +1,5 @@
 from lexer import Lexer
+import sys
 
 class Parser:
     def __init__(self, lexer):
@@ -101,10 +102,8 @@ class Parser:
         self.eat('SEMI')
         return {'type': 'print', 'expr': expr}
 
-    # NEW: comparison parsing
     def expression(self):
         node = self.arith_expr()
-        # Handle comparison operators
         if self.current_token[0] in ('EQ', 'NE', 'LE', 'GE', 'LT', 'GT'):
             op_token = self.current_token
             self.eat(op_token[0])
@@ -153,17 +152,11 @@ class Parser:
             raise SyntaxError(f"Unexpected token {token[0]} at line {token[2]}")
 
 if __name__ == "__main__":
-    source = """
-    int x;
-    x = 5;
-    if (x > 0) {
-        print(x);
-    } else {
-        print(0);
-    }
-    """
-    lexer = Lexer(source)
-    parser = Parser(lexer)
-    ast = parser.parse()
-    import json
-    print(json.dumps(ast, indent=2))
+    if len(sys.argv) < 2:
+        print("Usage: python parser.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
+    parser = Parser(source_code)
+    parser.parse()

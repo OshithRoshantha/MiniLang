@@ -1,5 +1,6 @@
 from lexer import Lexer
 from parser import Parser
+import sys
 
 class SemanticAnalyzer:
     def __init__(self, parser):
@@ -68,20 +69,11 @@ class SemanticAnalyzer:
             self.errors.append(f"Semantic Error: Variable '{node['name']}' not declared")
 
 if __name__ == "__main__":
-    source = """
-    int x;
-    x = y + 5;
-    if (x > 0) {
-        print(x);
-    }
-    """
-    lexer = Lexer(source)
-    parser = Parser(lexer)
-    analyzer = SemanticAnalyzer(parser)
-    ast, errors = analyzer.analyze()
-    print("AST:")
-    import json
-    print(json.dumps(ast, indent=2))
-    print("\nErrors:")
-    for error in errors:
-        print(error)
+    if len(sys.argv) < 2:
+        print("Usage: python semanticAnalyzer.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
+    analyzer = SemanticAnalyzer(source_code)
+    analyzer.analyze()
