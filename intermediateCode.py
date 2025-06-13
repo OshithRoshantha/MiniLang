@@ -8,6 +8,7 @@ class IntermediateCodeGenerator:
         self.analyzer = analyzer
         self.code = []
         self.temp_count = 0
+        self.label_count = 0
 
     def generate(self):
         ast, errors = self.analyzer.analyze()
@@ -20,6 +21,11 @@ class IntermediateCodeGenerator:
         temp = f"t{self.temp_count}"
         self.temp_count += 1
         return temp
+
+    def new_label(self):
+        label = f"L{self.label_count}"
+        self.label_count += 1
+        return label
 
     def visit(self, node):
         method_name = 'visit_' + node['type']
@@ -42,31 +48,29 @@ class IntermediateCodeGenerator:
 
     def visit_if(self, node):
         condition = self.visit(node['condition'])
-        label_else = f"L{self.temp_count}"
-        label_end = f"L{self.temp_count + 1}"
-        self.temp_count += 2
+        false_label = self.new_label()
+        end_label = self.new_label()
         
-        self.code.append(f"if not {condition} goto {label_else}")
+        self.code.append(f"if not {condition} goto {false_label}")
         for statement in node['true_block']:
             self.visit(statement)
-        self.code.append(f"goto {label_end}")
-        self.code.append(f"{label_else}:")
+        self.code.append(f"goto {end_label}")
+        self.code.append(f"{false_label}:")
         for statement in node['false_block']:
             self.visit(statement)
-        self.code.append(f"{label_end}:")
+        self.code.append(f"{end_label}:")
 
     def visit_while(self, node):
-        label_start = f"L{self.temp_count}"
-        label_end = f"L{self.temp_count + 1}"
-        self.temp_count += 2
+        start_label = self.new_label()
+        end_label = self.new_label()
         
-        self.code.append(f"{label_start}:")
+        self.code.append(f"{start_label}:")
         condition = self.visit(node['condition'])
-        self.code.append(f"if not {condition} goto {label_end}")
+        self.code.append(f"if not {condition} goto {end_label}")
         for statement in node['body']:
             self.visit(statement)
-        self.code.append(f"goto {label_start}")
-        self.code.append(f"{label_end}:")
+        self.code.append(f"goto {start_label}")
+        self.code.append(f"{end_label}:")
 
     def visit_print(self, node):
         expr_result = self.visit(node['expr'])
@@ -99,5 +103,16 @@ if __name__ == "__main__":
     filename = sys.argv[1]
     with open(filename, 'r') as f:
         source_code = f.read()
-    generator = IntermediateCodeGenerator(source_code)
-    generator.generate()
+    lexer = Lexer(source_code)
+    parser = Parser(lexer)
+    analyzer = SemanticAnalyzer(parser)
+    generator = IntermediateCodeGenerator(analyzer)
+    code, errors = generator.generate()
+    if errors:
+        print("Errors during code generation:")
+        for error in errors:
+            print(error)
+    else:
+        print("Generated Intermediate Code:")
+        for instruction in code:
+            print(instruction)
