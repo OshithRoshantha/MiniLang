@@ -11,11 +11,9 @@ class IntermediateCodeGenerator:
         self.label_count = 0
 
     def generate(self):
-        ast, errors = self.analyzer.analyze()
-        if errors:
-            return None, errors
+        ast = self.analyzer.parser.parse()
         self.visit(ast)
-        return self.code, []
+        return self.code
 
     def new_temp(self):
         temp = f"t{self.temp_count}"
@@ -40,7 +38,7 @@ class IntermediateCodeGenerator:
             self.visit(statement)
 
     def visit_declaration(self, node):
-        pass  
+        pass
 
     def visit_assignment(self, node):
         expr_result = self.visit(node['expr'])
@@ -107,12 +105,7 @@ if __name__ == "__main__":
     parser = Parser(lexer)
     analyzer = SemanticAnalyzer(parser)
     generator = IntermediateCodeGenerator(analyzer)
-    code, errors = generator.generate()
-    if errors:
-        print("Errors during code generation:")
-        for error in errors:
-            print(error)
-    else:
-        print("Generated Intermediate Code:")
-        for instruction in code:
-            print(instruction)
+    intermediate_code = generator.generate() 
+    print("Generated Intermediate Code:")
+    for instruction in intermediate_code:
+        print(instruction)

@@ -9,8 +9,8 @@ class SemanticAnalyzer:
         self.errors = []
 
     def analyze(self):
-        ast = self.parser.parse()
-        self.visit(ast)
+        ast = self.parser.parse()  
+        self.visit(ast) 
         return ast, self.errors
 
     def add_error(self, message, line):

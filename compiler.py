@@ -40,13 +40,8 @@ def main():
         return
 
     generator = IntermediateCodeGenerator(analyzer)
-    intermediate_code, code_errors = generator.generate()
-    if code_errors:
-        print("\nCode Generation Errors:")
-        for error in code_errors:
-            print(error)
-        return
-
+    intermediate_code = generator.generate()
+    
     print("\n=== TOKENS ===")
     for token in tokens:
         print(f"{token[0]:<10} {repr(token[1]):<15} Line {token[2]}")
@@ -56,8 +51,11 @@ def main():
     print(json.dumps(ast, indent=2))
 
     print("\n=== INTERMEDIATE CODE ===")
-    for instruction in intermediate_code:
-        print(instruction)
+    if intermediate_code:  
+        for instruction in intermediate_code:
+            print(instruction)
+    else:
+        print("No intermediate code generated")
 
 if __name__ == "__main__":
     main()
