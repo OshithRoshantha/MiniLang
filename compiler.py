@@ -1,7 +1,7 @@
 import sys
 from lexer import Lexer
 from parser import Parser
-from sematicAnalyzer import SemanticAnalyzer
+from semanticAnalyzer import SemanticAnalyzer
 from intermediateCode import IntermediateCodeGenerator
 
 def main():

@@ -39,11 +39,11 @@ The compiler is implemented in Python and covers all major phases: lexical analy
 
 6. To run the semantic analyzer:
    ```bash
-   python3 semantic_analyzer.py examples/example1.mini
+   python3 semanticAnalyzer.py examples/example1.mini
    ```
 
 7. To generate intermediate code:
    ```bash
-   python3 intermediate_code.py examples/example1.mini
+   python3 intermediateCode.py examples/example1.mini
    ```
 ---

@@ -1,6 +1,6 @@
 from lexer import Lexer
 from parser import Parser
-from sematicAnalyzer import SemanticAnalyzer
+from semanticAnalyzer import SemanticAnalyzer
 
 class IntermediateCodeGenerator:
     def __init__(self, analyzer):
