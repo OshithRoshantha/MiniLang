@@ -15,8 +15,6 @@ This project implements a simple compiler for MiniLang, a custom-designed progra
 
 The compiler is implemented in Python and covers all major phases: lexical analysis, parsing, semantic analysis, and intermediate code generation.
 
----
-
 ## Requirements
 - Python 3.6+
 
@@ -28,19 +26,24 @@ The compiler is implemented in Python and covers all major phases: lexical analy
    ```bash
    python3 compiler.py examples/example1.mini
    ```
+
 4. To run the lexer separately:
    ```bash
    python3 lexer.py examples/example1.mini
    ```
+
 5. To run the parser separately:
    ```bash
    python3 parser.py examples/example1.mini
    ```
+
 6. To run the semantic analyzer:
    ```bash
    python3 semantic_analyzer.py examples/example1.mini
    ```
+
 7. To generate intermediate code:
    ```bash
    python3 intermediate_code.py examples/example1.mini
    ```
+---
