@@ -18,33 +18,44 @@ def main():
         return
 
     lexer = Lexer(source)
-    parser = Parser(lexer)
-    analyzer = SemanticAnalyzer(parser)
-    generator = IntermediateCodeGenerator(analyzer)
+    try:
+        tokens = lexer.tokenize()
+    except SyntaxError as e:
+        print(f"Lexical Error: {e}")
+        return
 
-    tokens = lexer.tokenize()  # corrected from scan_tokens() to tokenize()
-    ast = parser.parse()
+    parser = Parser(lexer)
+    try:
+        ast = parser.parse()
+    except SyntaxError as e:
+        print(f"Syntax Error: {e}")
+        return
+
+    analyzer = SemanticAnalyzer(parser)
     analyzed_ast, semantic_errors = analyzer.analyze()
-    
     if semantic_errors:
         print("\nSemantic Errors:")
         for error in semantic_errors:
-            print(error)
+            print(f"Line {error['line']}: {error['message']}")
         return
 
-    intermediate_code, code_errors = generator.generate()
+    generator = IntermediateCodeGenerator(analyzer)
+    intermediate_code = generator.generate()
     
-    print("\nTokens:")
+    print("\n=== TOKENS ===")
     for token in tokens:
-        print(token)
-    
-    print("\nAbstract Syntax Tree:")
+        print(f"{token[0]:<10} {repr(token[1]):<15} Line {token[2]}")
+
+    print("\n=== ABSTRACT SYNTAX TREE ===")
     import json
     print(json.dumps(ast, indent=2))
-    
-    print("\nIntermediate Code:")
-    for instruction in intermediate_code:
-        print(instruction)
+
+    print("\n=== INTERMEDIATE CODE ===")
+    if intermediate_code:  
+        for instruction in intermediate_code:
+            print(instruction)
+    else:
+        print("No intermediate code generated")
 
 if __name__ == "__main__":
     main()

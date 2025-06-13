@@ -1,4 +1,5 @@
 from lexer import Lexer
+import sys
 
 class Parser:
     def __init__(self, lexer):
@@ -48,17 +49,19 @@ class Parser:
     def declaration(self):
         self.eat('INT')
         var_name = self.current_token[1]
+        line = self.current_token[2]
         self.eat('ID')
         self.eat('SEMI')
-        return {'type': 'declaration', 'var_name': var_name}
+        return {'type': 'declaration', 'var_name': var_name, 'line': line}
 
     def assignment(self):
         var_name = self.current_token[1]
+        line = self.current_token[2]
         self.eat('ID')
         self.eat('ASSIGN')
         expr = self.expression()
         self.eat('SEMI')
-        return {'type': 'assignment', 'var_name': var_name, 'expr': expr}
+        return {'type': 'assignment', 'var_name': var_name, 'expr': expr, 'line': line}
 
     def if_statement(self):
         self.eat('IF')
@@ -101,10 +104,8 @@ class Parser:
         self.eat('SEMI')
         return {'type': 'print', 'expr': expr}
 
-    # NEW: comparison parsing
     def expression(self):
         node = self.arith_expr()
-        # Handle comparison operators
         if self.current_token[0] in ('EQ', 'NE', 'LE', 'GE', 'LT', 'GT'):
             op_token = self.current_token
             self.eat(op_token[0])
@@ -142,8 +143,9 @@ class Parser:
             self.eat('INTEGER')
             return {'type': 'integer', 'value': int(token[1])}
         elif token[0] == 'ID':
+            var_name = token[1]
             self.eat('ID')
-            return {'type': 'variable', 'name': token[1]}
+            return {'type': 'variable', 'name': var_name}
         elif token[0] == 'LPAREN':
             self.eat('LPAREN')
             node = self.expression()
@@ -153,16 +155,13 @@ class Parser:
             raise SyntaxError(f"Unexpected token {token[0]} at line {token[2]}")
 
 if __name__ == "__main__":
-    source = """
-    int x;
-    x = 5;
-    if (x > 0) {
-        print(x);
-    } else {
-        print(0);
-    }
-    """
-    lexer = Lexer(source)
+    if len(sys.argv) < 2:
+        print("Usage: python parser.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
+    lexer = Lexer(source_code)
     parser = Parser(lexer)
     ast = parser.parse()
     import json

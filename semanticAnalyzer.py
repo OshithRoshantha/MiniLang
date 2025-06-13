@@ -1,5 +1,6 @@
 from lexer import Lexer
 from parser import Parser
+import sys
 
 class SemanticAnalyzer:
     def __init__(self, parser):
@@ -8,9 +9,12 @@ class SemanticAnalyzer:
         self.errors = []
 
     def analyze(self):
-        ast = self.parser.parse()
-        self.visit(ast)
+        ast = self.parser.parse()  
+        self.visit(ast) 
         return ast, self.errors
+
+    def add_error(self, message, line):
+        self.errors.append({"message": message, "line": line})
 
     def visit(self, node):
         method_name = 'visit_' + node['type']
@@ -27,14 +31,14 @@ class SemanticAnalyzer:
     def visit_declaration(self, node):
         var_name = node['var_name']
         if var_name in self.symbol_table:
-            self.errors.append(f"Semantic Error: Variable '{var_name}' already declared")
+            self.add_error(f"Variable '{var_name}' already declared", node.get('line', 0))
         else:
             self.symbol_table.add(var_name)
 
     def visit_assignment(self, node):
         var_name = node['var_name']
         if var_name not in self.symbol_table:
-            self.errors.append(f"Semantic Error: Variable '{var_name}' not declared")
+            self.add_error(f"Variable '{var_name}' not declared", node.get('line', 0))
         self.visit(node['expr'])
 
     def visit_if(self, node):
@@ -65,23 +69,20 @@ class SemanticAnalyzer:
 
     def visit_variable(self, node):
         if node['name'] not in self.symbol_table:
-            self.errors.append(f"Semantic Error: Variable '{node['name']}' not declared")
+            self.add_error(f"Variable '{node['name']}' not declared", node.get('line', 0))
 
 if __name__ == "__main__":
-    source = """
-    int x;
-    x = y + 5;
-    if (x > 0) {
-        print(x);
-    }
-    """
-    lexer = Lexer(source)
+    if len(sys.argv) < 2:
+        print("Usage: python semanticAnalyzer.py <source_file.mini>")
+        sys.exit(1)
+    filename = sys.argv[1]
+    with open(filename, 'r') as f:
+        source_code = f.read()
+    lexer = Lexer(source_code)
     parser = Parser(lexer)
     analyzer = SemanticAnalyzer(parser)
     ast, errors = analyzer.analyze()
-    print("AST:")
-    import json
-    print(json.dumps(ast, indent=2))
-    print("\nErrors:")
-    for error in errors:
-        print(error)
+    if errors:
+        print("Semantic Errors:")
+        for error in errors:
+            print(f"Line {error['line']}: {error['message']}")
