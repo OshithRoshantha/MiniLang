@@ -1,3 +1,16 @@
 int age;
 age = 18;
-print("Child");
+
+if (age < 13) {
+    print("Child");
+} else {
+    if (age < 20) {
+        print("Teenager");
+    } else {
+        if (age < 65) {
+            print("Adult");
+        } else {
+            print("Adult");
+        }
+    }
+}
