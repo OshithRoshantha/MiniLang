@@ -3,15 +3,14 @@ from parser import Parser
 import sys
 
 class SemanticAnalyzer:
-    def __init__(self, parser):
-        self.parser = parser
+    def __init__(self, ast):
+        self.ast = ast
         self.symbol_table = set()
         self.errors = []
 
     def analyze(self):
-        ast = self.parser.parse()  
-        self.visit(ast) 
-        return ast, self.errors
+        self.visit(self.ast) 
+        return self.ast, self.errors
 
     def add_error(self, message, line):
         self.errors.append({"message": message, "line": line})
@@ -55,7 +54,10 @@ class SemanticAnalyzer:
 
     def visit_print(self, node):
         self.visit(node['expr'])
-
+        
+    def visit_string(self, node):
+        pass
+    
     def visit_binop(self, node):
         self.visit(node['left'])
         self.visit(node['right'])
@@ -80,7 +82,8 @@ if __name__ == "__main__":
         source_code = f.read()
     lexer = Lexer(source_code)
     parser = Parser(lexer)
-    analyzer = SemanticAnalyzer(parser)
+    ast = parser.parse()           
+    analyzer = SemanticAnalyzer(ast) 
     ast, errors = analyzer.analyze()
     if errors:
         print("Semantic Errors:")

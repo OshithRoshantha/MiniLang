@@ -2,15 +2,15 @@ int age;
 age = 18;
 
 if (age < 13) {
-    print(Child);
+    print("Child");
 } else {
     if (age < 20) {
-        print(Teenager);
+        print("Teenager");
     } else {
         if (age < 65) {
-            print(Adult);
+            print("Adult");
         } else {
-            print(Adult);
+            print("Adult");
         }
     }
 }
