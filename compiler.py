@@ -31,7 +31,7 @@ def main():
         print(f"Syntax Error: {e}")
         return
 
-    analyzer = SemanticAnalyzer(parser)
+    analyzer = SemanticAnalyzer(ast)
     analyzed_ast, semantic_errors = analyzer.analyze()
     if semantic_errors:
         print("\nSemantic Errors:")
@@ -39,7 +39,7 @@ def main():
             print(f"Line {error['line']}: {error['message']}")
         return
 
-    generator = IntermediateCodeGenerator(analyzer)
+    generator = IntermediateCodeGenerator(analyzed_ast)
     intermediate_code = generator.generate()
     
     print("\n=== TOKENS ===")

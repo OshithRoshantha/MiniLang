@@ -146,6 +146,10 @@ class Parser:
             var_name = token[1]
             self.eat('ID')
             return {'type': 'variable', 'name': var_name}
+        elif token[0] == 'STRING':
+            string_value = token[1][1:-1]  
+            self.eat('STRING')
+            return {'type': 'string', 'value': string_value}
         elif token[0] == 'LPAREN':
             self.eat('LPAREN')
             node = self.expression()

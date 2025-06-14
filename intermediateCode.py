@@ -4,14 +4,14 @@ from semanticAnalyzer import SemanticAnalyzer
 import sys
 
 class IntermediateCodeGenerator:
-    def __init__(self, analyzer):
-        self.analyzer = analyzer
+    def __init__(self, ast):
+        self.ast = ast
         self.code = []
         self.temp_count = 0
         self.label_count = 0
 
     def generate(self):
-        ast = self.analyzer.parser.parse()
+        ast = self.ast
         self.visit(ast)
         return self.code
 
@@ -29,6 +29,9 @@ class IntermediateCodeGenerator:
         method_name = 'visit_' + node['type']
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node)
+    
+    def visit_string(self, node):
+        return f'"{node["value"]}"'
 
     def generic_visit(self, node):
         raise Exception(f'No visit_{node["type"]} method')
@@ -103,9 +106,16 @@ if __name__ == "__main__":
         source_code = f.read()
     lexer = Lexer(source_code)
     parser = Parser(lexer)
-    analyzer = SemanticAnalyzer(parser)
-    generator = IntermediateCodeGenerator(analyzer)
-    intermediate_code = generator.generate() 
+    ast = parser.parse()
+    analyzer = SemanticAnalyzer(ast)
+    ast, errors = analyzer.analyze()
+    if errors:
+        print("Semantic Errors:")
+        for error in errors:
+            print(f"Line {error['line']}: {error['message']}")
+        sys.exit(1)
+    generator = IntermediateCodeGenerator(ast)
+    intermediate_code = generator.generate()
     print("Generated Intermediate Code:")
     for instruction in intermediate_code:
         print(instruction)
