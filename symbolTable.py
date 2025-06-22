@@ -1,3 +1,5 @@
+#Author: PS/2020/007
+
 class SymbolTable:
     def __init__(self):
         self.symbols = {}
